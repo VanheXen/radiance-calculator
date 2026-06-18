@@ -19,14 +19,18 @@ character-banner 50/50 is a coin flip, boosted, or a guaranteed win.
 ### How to use
 Open the app, then pick one of three ways to load your history.
 
-#### 1. Wish-history link — fetches fresh data
-1. In Genshin, open **Wishes → History** once. This makes the game write a temporary
-   authenticated link into its local cache.
-2. Get that link. The easiest vetted way is **[stardb.gg/wish](https://stardb.gg/wish)** — it
-   shows the exact command for your platform (e.g. a PowerShell line on PC) and hands you the URL.
-3. Copy the link, paste it into the app's box, press **Fetch**. stardb imports your history from
-   Hoyo, the app reads it back.
+#### 1. Wish-history link — fetches fresh data (Windows)
+1. Start Genshin on your PC and open **Wishes → History**.
+2. Open **PowerShell** (search "PowerShell" in the Start menu).
+3. Run this command, then copy its output (your wish link):
+   ```powershell
+   iwr -useb stardb.gg/wish | iex
+   ```
+4. Paste that link into the app's box and press **Fetch**. stardb imports your history from Hoyo,
+   the app reads it back.
    - The link carries a **read-only authkey** that expires in ~24h, and is sent **only to stardb**.
+   - Not on Windows? Use the [stardb exporter](https://github.com/juliuskreutz/stardb-exporter) or
+     [stardb.gg/wish](https://stardb.gg/en/genshin/wish-import), then load via UID or JSON.
 
 #### 2. UID — after you've imported at least once
 1. Do the link import above once (via this app or stardb.gg/wish). That stores your history on stardb.
@@ -95,14 +99,18 @@ node test_ui.js         # interactive UI paths (DOM-stubbed)
 ### Come si usa
 Apri l'app, poi scegli uno dei tre modi per caricare la tua cronologia.
 
-#### 1. Link della cronologia wish — scarica dati aggiornati
-1. In Genshin, apri **Wish → Cronologia** una volta. Così il gioco scrive un link autenticato
-   temporaneo nella sua cache locale.
-2. Recupera quel link. Il modo più semplice e verificato è **[stardb.gg/wish](https://stardb.gg/wish)**:
-   mostra il comando esatto per la tua piattaforma (es. una riga PowerShell su PC) e ti dà l'URL.
-3. Copia il link, incollalo nella casella dell'app, premi **Fetch**. stardb importa la cronologia da
-   Hoyo e l'app la rilegge.
+#### 1. Link della cronologia wish — scarica dati aggiornati (Windows)
+1. Avvia Genshin sul PC e apri **Wish → Cronologia**.
+2. Apri **PowerShell** (cerca "PowerShell" nel menu Start).
+3. Esegui questo comando, poi copia il suo output (il tuo link wish):
+   ```powershell
+   iwr -useb stardb.gg/wish | iex
+   ```
+4. Incolla quel link nella casella dell'app e premi **Fetch**. stardb importa la cronologia da Hoyo e
+   l'app la rilegge.
    - Il link contiene un **authkey di sola lettura** che scade in ~24h, ed è inviato **solo a stardb**.
+   - Non sei su Windows? Usa lo [stardb exporter](https://github.com/juliuskreutz/stardb-exporter) o
+     [stardb.gg/wish](https://stardb.gg/en/genshin/wish-import), poi carica via UID o JSON.
 
 #### 2. UID — dopo averlo importato almeno una volta
 1. Esegui l'import via link sopra almeno una volta (con questa app o stardb.gg/wish). Così la

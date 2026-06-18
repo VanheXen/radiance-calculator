@@ -53,6 +53,10 @@
   .help-body strong { color:var(--fg); }
   .help-body em { color:var(--fg); font-style:normal; }
   .help-body a { color:var(--gold-dim); }
+  .help-body .cmd { display:block; margin:6px 0 2px; padding:8px 10px; background:#16131f;
+    border:1px solid var(--line); border-radius:7px; color:var(--gold); font-size:12px;
+    font-family:ui-monospace,Consolas,monospace; user-select:all; overflow-x:auto; }
+  .help-body .tiny { font-size:11px; margin-top:6px; }
   #src { color:var(--dim); font-size:12px; flex-basis:100%; }
 
   /* hero panel */
@@ -158,12 +162,15 @@
   <details class="help">
     <summary>How do I get my link or UID?</summary>
     <div class="help-body">
-      <p><strong>Wish-history link</strong> — fetches fresh data:</p>
+      <p><strong>Wish-history link</strong> (Windows) — fetches fresh data:</p>
       <ol>
-        <li>In Genshin, open <em>Wishes → History</em> once (this refreshes the link in the game's cache).</li>
-        <li>Get the link via <a href="https://stardb.gg/wish" target="_blank" rel="noopener">stardb.gg/wish</a> — it shows the exact command for your platform.</li>
-        <li>Paste it in the box above and press <em>Fetch</em>. The authkey is read-only (~24h) and goes only to stardb.</li>
+        <li>Start Genshin on your PC and open <em>Wishes → History</em>.</li>
+        <li>Open <em>PowerShell</em> (search "PowerShell" in the Start menu).</li>
+        <li>Run this command, then copy its output (your wish link):
+          <code class="cmd">iwr -useb stardb.gg/wish | iex</code></li>
+        <li>Paste that link in the box above and press <em>Fetch</em>. The authkey is read-only (~24h) and goes only to stardb.</li>
       </ol>
+      <p class="tiny">Not on Windows? Use the <a href="https://github.com/juliuskreutz/stardb-exporter" target="_blank" rel="noopener">stardb exporter</a> or <a href="https://stardb.gg/en/genshin/wish-import" target="_blank" rel="noopener">stardb.gg/wish</a>, then load via UID or JSON below.</p>
       <p><strong>UID</strong> — after importing once:</p>
       <ol>
         <li>Do the link import above at least once (here or on stardb.gg/wish).</li>
