@@ -5,153 +5,167 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Capturing Radiance — Genshin 50/50 status</title>
 <style>
+  /* ============================================================
+     Capturing Radiance — interface styles
+     Logic, i18n and DOM hooks live in the script block below;
+     this sheet only paints. Element IDs/classes are load-bearing.
+     ============================================================ */
   :root{
-    --gold:#e7c373; --gold-dim:#9c8347; --teal:#5fd6c4; --rose:#e2697f; --warn:#e0a93b;
-    --ink:#0d0c14; --panel:#16131f; --panel2:#1b1828; --line:#2b2740;
-    --fg:#ded9ec; --dim:#867fa6; --faint:#5a5575;
+    --gold:#e8c573; --gold-deep:#caa052; --gold-dim:#9c8347;
+    --teal:#5fd6c4; --rose:#e2697f; --warn:#e0a93b;
+    --ink:#0c0b13; --panel:#15121e; --panel-2:#1b1828; --field:#100e19;
+    --line:#2b2740; --line-soft:rgba(43,39,64,.5);
+    --fg:#e2ddee; --dim:#8a83a8; --faint:#5a5575;
     --serif:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,"Times New Roman",serif;
     --sans:"Segoe UI",system-ui,-apple-system,sans-serif;
     --mono:ui-monospace,Consolas,"SF Mono",monospace;
     --accent:var(--dim);
+    --r:16px;
   }
   *{box-sizing:border-box}
   html{scroll-behavior:smooth}
   body{
-    margin:0; min-height:100vh; color:var(--fg); font-family:var(--sans); font-size:15px;
-    padding:48px 18px 64px;
+    margin:0; min-height:100vh; color:var(--fg); font-size:15px; line-height:1.5;
+    font-family:var(--sans); padding:46px 18px 72px;
     background:
-      radial-gradient(900px 480px at 50% -10%, #2a2348 0%, transparent 58%),
-      radial-gradient(620px 380px at 92% 4%, #14303b 0%, transparent 55%),
-      radial-gradient(520px 360px at 6% 14%, #25143a 0%, transparent 60%),
+      radial-gradient(880px 460px at 50% -12%, #2c2450 0%, transparent 60%),
+      radial-gradient(600px 360px at 90% 2%, #123038 0%, transparent 56%),
+      radial-gradient(520px 360px at 8% 16%, #271340 0%, transparent 62%),
       var(--ink);
+    background-attachment:fixed;
   }
-  main{max-width:620px; margin:0 auto}
-  a{color:var(--gold-dim)}
-  a:hover{color:var(--gold)}
+  main{max-width:600px; margin:0 auto}
+  a{color:var(--gold-dim); text-decoration:none}
+  a:hover{color:var(--gold); text-decoration:underline}
 
-  /* language toggle + per-language visibility */
-  .langtoggle{display:flex; justify-content:flex-end; gap:6px; margin-bottom:6px}
+  /* ---------- language toggle + per-language visibility ---------- */
+  .langtoggle{display:flex; justify-content:flex-end; gap:6px; margin-bottom:10px}
   .langtoggle button{background:transparent; border:1px solid var(--line); color:var(--dim);
-    border-radius:8px; padding:4px 10px; font-size:11px; letter-spacing:.05em; cursor:pointer}
+    border-radius:8px; padding:4px 11px; font-size:11px; letter-spacing:.06em; cursor:pointer;
+    transition:border-color .2s, color .2s}
+  .langtoggle button:hover{color:var(--fg)}
   .langtoggle button.active{border-color:var(--gold-dim); color:var(--gold)}
   body[data-lang="en"] .l-it{display:none}
   body[data-lang="it"] .l-en{display:none}
 
   /* ---------- header ---------- */
-  header{text-align:center; margin-bottom:26px}
-  h1{font-family:var(--serif); font-weight:600; font-size:34px; margin:0; letter-spacing:.01em;
-     background:linear-gradient(180deg,#f3dca0,#c79b54); -webkit-background-clip:text;
+  header{text-align:center; margin-bottom:24px}
+  h1{margin:0; font-family:var(--serif); font-weight:600; font-size:35px; letter-spacing:.01em;
+     background:linear-gradient(180deg,#f4dda2,#c79b54); -webkit-background-clip:text;
      background-clip:text; color:transparent}
-  .tagline{color:var(--dim); font-size:13.5px; margin:8px 0 0}
+  .tagline{margin:9px auto 0; max-width:430px; color:var(--dim); font-size:13.5px; line-height:1.55}
 
   /* ---------- cards ---------- */
-  .card{background:linear-gradient(180deg,rgba(40,36,62,.5),rgba(20,18,32,.72));
-    border:1px solid var(--line); border-radius:18px; padding:20px;
-    box-shadow:0 1px 0 rgba(255,255,255,.04) inset, 0 22px 50px -34px #000}
-  .card + .card{margin-top:18px}
+  .card{background:linear-gradient(180deg,rgba(40,36,62,.46),rgba(19,17,30,.72));
+    border:1px solid var(--line); border-radius:var(--r); padding:20px;
+    box-shadow:0 1px 0 rgba(255,255,255,.04) inset, 0 24px 52px -36px #000}
+  .card + .card{margin-top:16px}
 
-  /* ---------- input ---------- */
+  /* ---------- input row ---------- */
   .field{display:flex; gap:8px}
-  #link{flex:1; min-width:0; background:var(--panel); color:var(--fg);
-    border:1px solid var(--line); border-radius:11px; padding:12px 14px; font-size:14px}
-  #link:focus{outline:none; border-color:var(--gold-dim); box-shadow:0 0 0 3px rgba(231,195,115,.08)}
+  #link{flex:1; min-width:0; background:var(--field); color:var(--fg); font-size:14px;
+    border:1px solid var(--line); border-radius:11px; padding:12px 14px; font-family:var(--sans)}
+  #link:focus{outline:none; border-color:var(--gold-dim); box-shadow:0 0 0 3px rgba(232,197,115,.10)}
   #link::placeholder{color:var(--faint)}
-  #fetch{background:linear-gradient(180deg,#e7c373,#caa052); color:#241a08; font-weight:700;
-    border:none; border-radius:11px; padding:0 20px; font-size:14px; cursor:pointer;
+  #fetch{flex:none; border:none; border-radius:11px; padding:0 22px; font-size:14px; font-weight:700;
+    color:#241a08; cursor:pointer; background:linear-gradient(180deg,#e8c573,#caa052);
     transition:filter .15s, transform .05s}
   #fetch:hover{filter:brightness(1.07)}
   #fetch:active{transform:translateY(1px)}
   #fetch:disabled{opacity:.55; cursor:default; filter:none}
 
-  .field-warn{margin:10px 2px 0; font-size:12px; color:var(--warn); line-height:1.55}
+  .field-warn{margin:11px 2px 0; font-size:12px; line-height:1.55; color:var(--warn)}
   .field-warn::before{content:"\26A0\00a0\00a0"}
+  .field-warn strong{color:var(--fg); font-weight:700}
   .field-warn a{color:var(--warn); text-decoration:underline; white-space:nowrap}
 
-  .alt{display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-top:14px;
-    padding-top:14px; border-top:1px solid var(--line)}
-  label.file{background:var(--panel2); color:var(--fg); border:1px solid var(--line);
+  /* ---------- alt input row (Load JSON / sample / picker) ---------- */
+  .alt{display:flex; align-items:center; flex-wrap:wrap; gap:10px;
+    margin-top:15px; padding-top:15px; border-top:1px solid var(--line)}
+  label.file{background:var(--panel-2); color:var(--fg); border:1px solid var(--line);
     border-radius:10px; padding:9px 15px; font-size:13px; cursor:pointer; transition:border-color .2s}
   label.file:hover{border-color:var(--gold-dim)}
   .alt-note{color:var(--dim); font-size:12px}
   .ghost{background:transparent; border:1px solid var(--line); color:var(--dim);
-    border-radius:10px; padding:9px 14px; font-size:13px; cursor:pointer; transition:border-color .2s, color .2s}
+    border-radius:10px; padding:9px 14px; font-size:13px; cursor:pointer;
+    transition:border-color .2s, color .2s}
   .ghost:hover{border-color:var(--gold-dim); color:var(--fg)}
-  #uidpick{background:var(--panel); color:var(--fg); border:1px solid var(--line);
+  #uidpick{background:var(--field); color:var(--fg); border:1px solid var(--line);
     border-radius:10px; padding:9px 11px; font-size:13px}
   #src{color:var(--dim); font-size:12px}
-  #upd{color:var(--faint); font-size:11px; margin:12px 2px 0; text-align:right}
+  #upd{margin:13px 2px 0; text-align:right; color:var(--faint); font-size:11px}
 
   /* ---------- help disclosure ---------- */
-  details.help{margin-top:14px; font-size:13px}
-  details.help>summary{color:var(--gold); cursor:pointer; list-style:none; width:fit-content;
-    font-weight:600}
+  details.help{margin-top:15px; font-size:13px}
+  details.help>summary{width:fit-content; color:var(--gold); font-weight:600; cursor:pointer;
+    list-style:none}
   summary::-webkit-details-marker{display:none}
   details.help>summary::before{content:"\25B8\00a0\00a0"}
   details.help[open]>summary::before{content:"\25BE\00a0\00a0"}
-  .help-body{color:var(--dim); line-height:1.65; margin-top:10px}
-  .help-body p{margin:10px 0 3px} .help-body p:first-child{margin-top:2px}
-  .help-body ol{margin:3px 0 8px; padding-left:20px}
-  .help-body li{margin:3px 0}
+  .help-body{margin-top:11px; color:var(--dim); line-height:1.65}
+  .help-body p{margin:11px 0 3px} .help-body p:first-child{margin-top:2px}
+  .help-body ol{margin:3px 0 9px; padding-left:20px}
+  .help-body li{margin:4px 0}
   .help-body strong{color:var(--fg)} .help-body em{color:var(--fg); font-style:normal}
-  .cmd-row{display:flex; gap:8px; align-items:stretch; margin:7px 0 2px}
-  .cmd{flex:1; min-width:0; padding:9px 12px; background:#0f0d18;
-    border:1px solid var(--line); border-radius:8px; color:var(--gold); font-size:12.5px;
-    font-family:var(--mono); user-select:all; overflow-x:auto; white-space:nowrap}
-  .copy{flex:none; background:var(--panel2); border:1px solid var(--line); color:var(--gold);
+  .cmd-row{display:flex; gap:8px; align-items:stretch; margin:8px 0 2px}
+  .cmd{flex:1; min-width:0; padding:9px 12px; background:#0e0c17; border:1px solid var(--line);
+    border-radius:8px; color:var(--gold); font-family:var(--mono); font-size:12.5px;
+    user-select:all; white-space:nowrap; overflow-x:auto}
+  .copy{flex:none; background:var(--panel-2); border:1px solid var(--line); color:var(--gold);
     border-radius:8px; padding:0 13px; font-size:12px; cursor:pointer; transition:border-color .2s}
   .copy:hover{border-color:var(--gold-dim)}
-  .tiny{font-size:11.5px; margin-top:8px}
+  .tiny{font-size:11.5px; margin-top:9px}
 
   /* ---------- hero result ---------- */
   .hero{position:relative; overflow:hidden; text-align:center; padding:34px 22px 28px}
-  .hero::before{content:""; position:absolute; left:50%; top:40px; width:320px; height:320px;
+  .hero::before{content:""; position:absolute; left:50%; top:38px; width:320px; height:320px;
     transform:translateX(-50%); border-radius:50%; pointer-events:none;
     background:radial-gradient(circle, var(--accent) 0%, transparent 62%);
     opacity:.12; transition:opacity .5s, background .5s}
-  [data-state="2"] .hero::before{opacity:.2}
+  [data-state="2"] .hero::before{opacity:.20}
   [data-state="3"] .hero::before{opacity:.34}
-  .eyebrow{font-family:var(--serif); font-size:12px; letter-spacing:.3em; text-transform:uppercase;
-    color:var(--dim); margin:0 0 18px}
-  .pips{display:flex; justify-content:center; gap:18px; margin:2px 0 6px}
+  .eyebrow{margin:0 0 18px; font-family:var(--serif); font-size:12px; letter-spacing:.3em;
+    text-transform:uppercase; color:var(--dim)}
+  .pips{display:flex; justify-content:center; gap:18px; margin:2px 0 8px}
   .pip{width:38px; height:38px; border-radius:50%; border:2px solid var(--line);
-    transition:all .35s ease}
+    transition:border-color .35s, box-shadow .35s, background .35s}
   .pip.on{border-color:var(--accent);
     background:radial-gradient(circle at 50% 36%, var(--accent), transparent 72%);
     box-shadow:0 0 18px -2px var(--accent)}
   [data-state="3"] .pip.on{animation:throb 1.7s ease-in-out infinite}
   @keyframes throb{0%,100%{box-shadow:0 0 15px -2px var(--accent)}50%{box-shadow:0 0 30px 3px var(--accent)}}
-  .counter-line{font-family:var(--serif); margin:16px 0 2px}
-  #counter{font-size:46px; font-weight:600; color:var(--accent); line-height:1}
+  .counter-line{margin:16px 0 2px; font-family:var(--serif)}
+  #counter{font-size:46px; font-weight:600; line-height:1; color:var(--accent)}
   .of{color:var(--faint); font-size:24px}
-  .sub{color:var(--dim); font-size:11px; letter-spacing:.14em; text-transform:uppercase; margin:0}
-  #status{font-family:var(--serif); font-style:italic; font-size:21px; font-weight:600;
-    color:var(--accent); margin:18px 0 4px; min-height:26px}
+  .sub{margin:0; color:var(--dim); font-size:11px; letter-spacing:.14em; text-transform:uppercase}
+  #status{min-height:26px; margin:18px 0 4px; font-family:var(--serif); font-style:italic;
+    font-weight:600; font-size:21px; color:var(--accent)}
 
-  #summary{display:flex; gap:9px; justify-content:center; flex-wrap:wrap; margin-top:10px}
+  #summary{display:flex; justify-content:center; flex-wrap:wrap; gap:9px; margin-top:10px}
   .chip{border:1px solid var(--line); border-radius:999px; padding:6px 13px; font-size:12px;
     color:var(--fg); background:rgba(255,255,255,.02)}
   .chip b{color:var(--gold); font-weight:700} .chip.teal b{color:var(--teal)}
-  #note{font-size:12.5px; color:var(--dim); line-height:1.55; margin:14px auto 0; max-width:440px}
-  .legend{color:var(--faint); font-size:11px; margin:14px 0 0}
+  #note{max-width:440px; margin:14px auto 0; color:var(--dim); font-size:12.5px; line-height:1.55}
+  .legend{margin:14px 0 0; color:var(--faint); font-size:11px}
 
-  /* ---------- seedbox (partial history) ---------- */
+  /* ---------- seedbox (partial-history anchoring) ---------- */
   #seedbox{margin-top:18px; padding-top:16px; border-top:1px solid var(--line); text-align:left}
   .warn{color:var(--gold); font-size:12.5px; line-height:1.5} .warn b{color:var(--fg)}
   label.seed{display:block; margin-top:12px; font-size:13px; color:var(--fg)}
-  .rank{display:inline-block; font-size:11px; color:var(--gold); letter-spacing:.03em; margin-right:8px}
-  #seed,#crpick{margin-top:5px; background:var(--panel); color:var(--fg); border:1px solid var(--line);
+  .rank{display:inline-block; margin-right:8px; color:var(--gold); font-size:11px; letter-spacing:.03em}
+  #seed,#crpick{margin-top:5px; background:var(--field); color:var(--fg); border:1px solid var(--line);
     border-radius:8px; padding:6px 10px; font-size:13px}
   #seed{margin-left:8px}
-  .hint{margin-top:10px; font-size:11.5px; color:var(--dim); line-height:1.5}
+  .hint{margin-top:11px; color:var(--dim); font-size:11.5px; line-height:1.5}
 
-  /* ---------- history ---------- */
-  table{width:100%; border-collapse:collapse; margin-top:18px; font-size:13px}
-  caption{font-family:var(--serif); font-style:italic; color:var(--dim); text-align:left;
-    padding:0 4px 10px; font-size:14px}
-  th,td{text-align:left; padding:8px 10px}
-  th{color:var(--dim); font-weight:600; font-size:11px; letter-spacing:.07em; text-transform:uppercase;
-    border-bottom:1px solid var(--line)}
-  tbody tr{border-bottom:1px solid rgba(43,39,64,.5)}
+  /* ---------- history table ---------- */
+  table{width:100%; border-collapse:collapse; margin-top:16px; font-size:13px}
+  caption{padding:0 4px 10px; text-align:left; font-family:var(--serif); font-style:italic;
+    font-size:14px; color:var(--dim)}
+  th,td{padding:8px 10px; text-align:left}
+  th{border-bottom:1px solid var(--line); color:var(--dim); font-weight:600; font-size:11px;
+    letter-spacing:.07em; text-transform:uppercase}
+  tbody tr{border-bottom:1px solid var(--line-soft)}
   tbody tr:hover{background:rgba(255,255,255,.025)}
   td.win{color:var(--teal)} td.loss{color:var(--rose)} td.guarantee{color:var(--dim)}
   td.pity{color:var(--fg); font-variant-numeric:tabular-nums}
@@ -159,23 +173,26 @@
   tr.uncertain td{opacity:.42; font-style:italic}
 
   /* ---------- footer / legal ---------- */
-  footer{margin-top:30px}
-  details.legal{font-size:12.5px; border-top:1px solid var(--line); padding-top:14px}
-  details.legal>summary{color:var(--gold-dim); cursor:pointer; list-style:none; font-weight:600}
+  footer{margin-top:28px}
+  details.legal{border-top:1px solid var(--line); padding-top:14px; font-size:12.5px}
+  details.legal>summary{color:var(--gold-dim); font-weight:600; cursor:pointer; list-style:none}
   details.legal>summary::before{content:"\25B8\00a0\00a0"}
   details.legal[open]>summary::before{content:"\25BE\00a0\00a0"}
-  .legal-body{color:var(--dim); line-height:1.6; margin-top:10px}
-  .legal-body h4{color:var(--fg); font-size:12.5px; margin:14px 0 3px}
+  .legal-body{margin-top:11px; color:var(--dim); line-height:1.6}
+  .legal-body h4{margin:14px 0 3px; color:var(--fg); font-size:12.5px}
   .legal-body ul{margin:4px 0; padding-left:18px} .legal-body li{margin:3px 0}
   .legal-body strong{color:var(--fg)} .legal-body em{color:var(--gold-dim); font-style:normal}
-  .copyright{color:var(--faint); font-size:11px; text-align:center; line-height:1.6; margin:18px 0 0}
+  .copyright{margin:18px 0 0; text-align:center; color:var(--faint); font-size:11px; line-height:1.6}
 
   @media (max-width:480px){
-    #counter{font-size:40px} h1{font-size:28px}
-    .alt{gap:8px}
+    body{padding:34px 14px 56px}
+    h1{font-size:28px} #counter{font-size:40px}
+    .field{flex-wrap:wrap} #fetch{flex:1; padding:11px 0}
+    .pips{gap:14px}
   }
   @media (prefers-reduced-motion:reduce){*{animation:none!important; transition:none!important}}
 
+  /* state -> accent colour ramp (set on <body data-state>) */
   [data-state]{--accent:var(--dim)}
   [data-state="2"]{--accent:var(--gold-dim)}
   [data-state="3"]{--accent:var(--gold)}
@@ -187,9 +204,10 @@
     <button type="button" data-setlang="en" aria-label="English">EN</button>
     <button type="button" data-setlang="it" aria-label="Italiano">IT</button>
   </div>
+
   <header>
     <h1>Capturing Radiance</h1>
-    <p class="tagline"><span class="l-en">Your Genshin 50/50 status, reconstructed from your wish history.</span><span class="l-it">Il tuo stato 50/50 di Genshin, ricostruito dalla cronologia dei desideri.</span></p>
+    <p class="tagline"><span class="l-en">Reconstructs your post-v5.0 50/50 status from your Genshin wish history — and tells you what your next character-banner pull does.</span><span class="l-it">Ricostruisce il tuo stato 50/50 post-v5.0 dalla cronologia dei desideri di Genshin — e ti dice cosa farà il prossimo pull sul banner personaggio.</span></p>
   </header>
 
   <!-- INPUT -->
@@ -198,7 +216,7 @@
       <input id="link" type="text" placeholder="Paste wish link or 9-digit UID" autocomplete="off" spellcheck="false" aria-label="Wish history link or 9-digit UID">
       <button id="fetch">Fetch</button>
     </div>
-    <p class="field-warn"><span class="l-en">Using a link or UID imports your wishes to stardb, making them <strong>public to anyone with your UID</strong>. To stay private, use Load&nbsp;JSON. <a href="#privacy">Details</a></span><span class="l-it">Usare un link o UID importa i tuoi desideri su stardb, rendendoli <strong>pubblici per chiunque conosca il tuo UID</strong>. Per restare privato, usa Load&nbsp;JSON. <a href="#privacy">Dettagli</a></span></p>
+    <p class="field-warn"><span class="l-en">A link or UID imports your wishes to stardb, making them <strong>public to anyone who knows your UID</strong>. To stay private, use Load&nbsp;JSON. <a href="#privacy">Details</a></span><span class="l-it">Un link o UID importa i tuoi desideri su stardb, rendendoli <strong>pubblici per chiunque conosca il tuo UID</strong>. Per restare privato, usa Load&nbsp;JSON. <a href="#privacy">Dettagli</a></span></p>
 
     <div class="alt">
       <label class="file">Load JSON<input id="file" type="file" accept=".json" hidden></label>
