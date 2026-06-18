@@ -1,0 +1,8 @@
+# personal wish exports — NEVER commit (contains your UID + full wish history)
+stardb-export*.json
+paimon-moe-local-data.json
+
+# python / test scratch
+__pycache__/
+*.pyc
+_chk.js
