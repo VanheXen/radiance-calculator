@@ -39,7 +39,7 @@ Open the app, then load your history one of three ways.
 - Export your history as JSON from a local exporter, then **Load JSON**. Your wish data never leaves your
   device. If the file holds several accounts, a **UID picker** appears.
 
-No history handy? Press **Try sample data** to see a result.
+No history handy? Press **Try sample data** for a result — each press builds a fresh random history, so press again for a different scenario.
 
 ### Partial history
 If your data starts after v5.0 (2024-08-28), the counter can be ambiguous. The app resolves it,
@@ -121,7 +121,7 @@ Apri l'app, poi carica la cronologia in uno dei tre modi.
 - Esporta la cronologia come JSON da un exporter locale, poi **Load JSON**. I dati restano sul tuo
   dispositivo. Se il file contiene più account, compare un **selettore UID**.
 
-Niente cronologia a portata? Premi **Prova dati esempio** per vedere un risultato.
+Niente cronologia a portata? Premi **Prova dati esempio** per un risultato — ogni pressione crea una storia casuale nuova, quindi premi di nuovo per uno scenario diverso.
 
 ### Storia parziale
 Se i dati iniziano dopo la v5.0 (28-08-2024), il contatore può essere ambiguo. L'app lo risolve, dal metodo
