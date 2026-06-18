@@ -696,14 +696,29 @@ function applyLang(lang){
 document.querySelectorAll(".langtoggle button").forEach(b=> b.addEventListener("click", ()=> applyLang(b.dataset.setlang)));
 applyLang(LANG);
 
-// ---- sample data: let people see a result before importing anything ----
+// ---- sample data: fresh random (but model-valid) history on every press ----
+const DEMO_FEATURED=["Furina","Nahida","Arlecchino","Clorinde","Mavuika","Neuvillette",
+  "Raiden Shogun","Yelan","Kaedehara Kazuha","Hu Tao","Navia","Lyney","Mualani","Venti","Skirk"];
+const DEMO_STANDARD=[...STANDARD];   // a 5★ from the standard pool = a lost 50/50
 function demoData(){
-  // [date, featured-or-standard name, 5★ pity] — builds a believable full history
-  const fives=[["2024-07-10","Venti",78],["2024-08-29","Furina",76],["2024-10-01","Mona",80],
-    ["2024-10-10","Nahida",75],["2024-11-05","Qiqi",82],["2024-11-12","Arlecchino",70],
-    ["2024-12-01","Jean",79],["2024-12-08","Clorinde",74],["2025-01-01","Mavuika",60]];
+  const rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+  const pick=arr=>arr[rnd(0,arr.length-1)];
+  // Mirror the model's state so we never emit an impossible run (lose a 50/50 at counter 3):
+  // guar = next char 5★ is a post-loss guaranteed featured; c = radiance counter.
+  let guar=false, c=1;
   const out=[]; let id=0;
-  for(const [date,name,pity] of fives){
+  // First 5★ lands exactly on v5.0 so the model skips nothing (earliest===V50 => full history)
+  // and its counter walk matches this generator's — otherwise we could emit an impossible run.
+  let d=new Date(V50+"T12:00:00Z");
+  const n=rnd(8,12);
+  for(let i=0;i<n;i++){
+    let name;
+    if(guar){ name=pick(DEMO_FEATURED); guar=false; }          // guaranteed pull: counter unchanged
+    else if(c===3){ name=pick(DEMO_FEATURED); c=1; }           // counter 3 -> CR win is guaranteed
+    else if(Math.random()<0.5){ name=pick(DEMO_FEATURED); c=c>=2?1:Math.max(0,c-1); } // won 50/50
+    else { name=pick(DEMO_STANDARD); c=c+1; guar=true; }       // lost 50/50
+    if(i>0) d=new Date(d.getTime()+rnd(8,40)*864e5);           // advance a few weeks (keep first on v5.0)
+    const date=d.toISOString().slice(0,10), pity=rnd(1,90);
     for(let k=1;k<pity;k++) out.push({type:"weapon",name:"—",rarity:3,item_id:11301,id:String(id++),timestamp:date+"T12:00:00Z"});
     out.push({type:"character",name,rarity:5,item_id:0,id:String(id++),timestamp:date+"T12:00:00Z"});
   }
