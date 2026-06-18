@@ -2,7 +2,7 @@
 // radiance.html (browser globals stubbed), and asserts full branch coverage.
 // Run: node test_model.js
 const fs=require("fs");
-const h=fs.readFileSync("radiance.html","utf8");
+const h=fs.readFileSync("index.html","utf8");
 let src=h.match(/<script>([\s\S]*)<\/script>/)[1];
 const noop=()=>{}; const el=new Proxy({},{get:()=>(()=>el),set:()=>true});
 el.classList={toggle:noop,remove:noop}; el.querySelectorAll=()=>[]; el.options=[]; el.dataset={};

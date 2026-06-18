@@ -4,7 +4,7 @@ A single-file, offline-friendly tool that reads your Genshin Impact wish history
 and tells you your current **Capturing Radiance** counter — and whether your next
 character-banner 50/50 is a coin flip, boosted, or a guaranteed win.
 
-> The whole app is **`radiance.html`**. Open it in any browser. No install.
+> The whole app is **`index.html`**. Open it in any browser. No install.
 
 ---
 
@@ -17,7 +17,7 @@ character-banner 50/50 is a coin flip, boosted, or a guaranteed win.
 - Works with **full or partial** history, and pins the counter for certain whenever possible.
 
 ### How to use
-Open `radiance.html`, then either:
+Open `index.html`, then either:
 1. **Paste your wish-history link** (from stardb.gg/wish or the in-game export) → **Fetch**.
 2. **Type a UID** that's already imported to stardb → **Fetch**.
 3. **Load JSON** — a stardb export file, fully offline.
@@ -59,7 +59,7 @@ python gen_testdata.py  # just regenerate testdata/ fixtures
 node test_model.js      # model + branch coverage vs real app code
 node test_ui.js         # interactive UI paths (DOM-stubbed)
 ```
-`radiance.html` is the only file you ship. Everything else is dev tooling.
+`index.html` is the only file you ship. Everything else is dev tooling.
 
 ---
 
@@ -72,7 +72,7 @@ node test_ui.js         # interactive UI paths (DOM-stubbed)
 - Funziona con storia **completa o parziale**, e fissa il contatore con certezza quando possibile.
 
 ### Come si usa
-Apri `radiance.html`, poi:
+Apri `index.html`, poi:
 1. **Incolla il link della cronologia dei wish** (da stardb.gg/wish o l'export in-game) → **Fetch**.
 2. **Scrivi un UID** già importato su stardb → **Fetch**.
 3. **Load JSON** — un file export di stardb, completamente offline.
@@ -114,4 +114,4 @@ python gen_testdata.py  # rigenera solo le fixture in testdata/
 node test_model.js      # modello + copertura dei rami sul codice reale
 node test_ui.js         # percorsi UI interattivi (DOM simulato)
 ```
-`radiance.html` è l'unico file da distribuire. Tutto il resto è strumentazione di sviluppo.
+`index.html` è l'unico file da distribuire. Tutto il resto è strumentazione di sviluppo.

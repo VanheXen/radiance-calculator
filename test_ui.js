@@ -37,7 +37,7 @@ global.localStorage={getItem:()=>null,setItem(){}};
 global.fetch=()=>Promise.reject(new Error("no default net"));
 
 // ---- load real script, export the functions we need ----
-let src=fs.readFileSync("radiance.html","utf8").match(/<script>([\s\S]*)<\/script>/)[1];
+let src=fs.readFileSync("index.html","utf8").match(/<script>([\s\S]*)<\/script>/)[1];
 src+="\n;mod.render=render;mod.fetchWishes=fetchWishes;mod.f5=fivestar5050;"
    +"mod.showUid=showUid;mod._setLoaded=(u,f)=>{LOADED={uids:u,fname:f};};";
 const mod={}; new Function("mod",src)(mod);
