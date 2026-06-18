@@ -32,10 +32,17 @@ resolves it, strongest method first:
 3. **Enter your counter** at the start date — memory-based fallback.
 
 ### Privacy
-- **Load JSON** is fully local — nothing leaves your machine.
+- **Load JSON** processes your wish data fully on your machine — your wish data never leaves it.
 - **Link / UID** fetch goes to **stardb.gg only**, over HTTPS (it already hosts your wish history).
   The wish link's authkey is read-only and expires in ~24h.
-- Character data auto-updates from the public [genshin-db](https://github.com/theBowja/genshin-db) repo.
+- Independently of how you load data, the app fetches **character names** from the public
+  [genshin-db](https://github.com/theBowja/genshin-db) repo to stay current — **no personal data is sent** there.
+
+### Disclaimer
+- **Unofficial fan tool**, not affiliated with or endorsed by HoYoverse.
+- The Capturing Radiance counter comes from an **unofficial community model** — HoYoverse has never
+  published the exact mechanic. Results are **estimates, not guarantees**; the model can be wrong,
+  especially on partial histories.
 
 ### The model
 Based on the community analysis of ~4M post-v5.0 pulls
@@ -87,10 +94,17 @@ lo risolve, dal metodo più affidabile:
 3. **Inserisci il contatore** alla data d'inizio — ripiego basato sulla memoria.
 
 ### Privacy
-- **Load JSON** è completamente locale — niente lascia il tuo dispositivo.
+- **Load JSON** elabora i dati dei wish interamente sul tuo dispositivo — i dati dei wish non lo lasciano.
 - Il fetch da **Link / UID** va **solo a stardb.gg**, via HTTPS (ospita già la tua cronologia).
   L'authkey del link è di sola lettura e scade in ~24h.
-- I dati dei personaggi si aggiornano dal repo pubblico [genshin-db](https://github.com/theBowja/genshin-db).
+- Indipendentemente da come carichi i dati, l'app scarica i **nomi dei personaggi** dal repo pubblico
+  [genshin-db](https://github.com/theBowja/genshin-db) per restare aggiornata — **nessun dato personale** viene inviato lì.
+
+### Avvertenze
+- **Strumento fan non ufficiale**, non affiliato né approvato da HoYoverse.
+- Il contatore Capturing Radiance deriva da un **modello non ufficiale della community** — HoYoverse non
+  ha mai pubblicato il meccanismo esatto. I risultati sono **stime, non garanzie**; il modello può
+  sbagliare, soprattutto con cronologie parziali.
 
 ### Il modello
 Basato sull'analisi della community di ~4M pull post-v5.0
