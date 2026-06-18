@@ -49,12 +49,28 @@ resolves it, strongest method first:
 2. **Pick the 5★ you got from Capturing Radiance** (the golden animation) — self-checking, pins everything after it.
 3. **Enter your counter** at the start date — memory-based fallback.
 
-### Privacy
-- **Load JSON** processes your wish data fully on your machine — your wish data never leaves it.
-- **Link / UID** fetch goes to **stardb.gg only**, over HTTPS (it already hosts your wish history).
-  The wish link's authkey is read-only and expires in ~24h.
-- Independently of how you load data, the app fetches **character names** from the public
-  [genshin-db](https://github.com/theBowja/genshin-db) repo to stay current — **no personal data is sent** there.
+### Privacy — read before using Link/UID
+This app talks only to stardb.gg and genshin-db, and exposes nothing itself. But **stardb's import
+makes your wish history public**, so how you load data matters:
+
+- **Link** → pressing Fetch POSTs your link to stardb's import endpoint. stardb then stores your
+  history and makes it **publicly readable by UID** ([stardb's own notice](https://stardb.gg/en/genshin/wish-import):
+  *"Importing Wishes will make it public to other users."*). The wish-link authkey is read-only (~24h),
+  sent only to stardb.
+- **UID** → only reads whatever is already public on stardb for that UID. (Any imported UID is
+  readable by anyone — that's how this method works.)
+- **Load JSON** → sends nothing; your wish data stays on your machine. **Caveat:** a JSON exported
+  from the **stardb website** was already imported there (public). A JSON from a **local exporter**
+  ([stardb-exporter](https://github.com/juliuskreutz/stardb-exporter), paimon.moe, in-game/UIGF) that
+  doesn't upload is **private** — this is the only way to use the tool without exposing anything.
+- **Removing data from stardb:** stardb's *private* toggle hides your profile/leaderboard listing but
+  does **not** hide the wish API — the data stays readable by UID. To actually remove it, **delete**
+  your wishes on stardb.
+- **Character names** are fetched from the public [genshin-db](https://github.com/theBowja/genshin-db)
+  repo regardless of method — **no personal data is sent** there.
+
+**Want zero exposure?** Use **Load JSON** with a file from a local exporter, or run this app's
+`index.html` locally — your data never touches stardb.
 
 ### Disclaimer
 - **Unofficial fan tool**, not affiliated with or endorsed by HoYoverse.
@@ -130,12 +146,26 @@ lo risolve, dal metodo più affidabile:
 2. **Scegli il 5★ ottenuto da Capturing Radiance** (l'animazione dorata) — si auto-verifica e fissa tutto ciò che viene dopo.
 3. **Inserisci il contatore** alla data d'inizio — ripiego basato sulla memoria.
 
-### Privacy
-- **Load JSON** elabora i dati dei wish interamente sul tuo dispositivo — i dati dei wish non lo lasciano.
-- Il fetch da **Link / UID** va **solo a stardb.gg**, via HTTPS (ospita già la tua cronologia).
-  L'authkey del link è di sola lettura e scade in ~24h.
-- Indipendentemente da come carichi i dati, l'app scarica i **nomi dei personaggi** dal repo pubblico
-  [genshin-db](https://github.com/theBowja/genshin-db) per restare aggiornata — **nessun dato personale** viene inviato lì.
+### Privacy — leggi prima di usare Link/UID
+Questa app comunica solo con stardb.gg e genshin-db, e di per sé non espone nulla. Ma **l'import di
+stardb rende pubblica la tua cronologia**, quindi conta come carichi i dati:
+
+- **Link** → premendo Fetch invii (POST) il link all'endpoint di import di stardb. stardb salva la
+  cronologia e la rende **leggibile pubblicamente tramite UID** ([avviso di stardb](https://stardb.gg/en/genshin/wish-import):
+  *"Importing Wishes will make it public to other users."*). L'authkey è di sola lettura (~24h), inviato solo a stardb.
+- **UID** → legge solo ciò che è già pubblico su stardb per quell'UID. (Qualsiasi UID importato è
+  leggibile da chiunque — è così che funziona il metodo.)
+- **Load JSON** → non invia nulla; i dati restano sul tuo dispositivo. **Attenzione:** un JSON esportato
+  dal **sito stardb** era già stato importato lì (pubblico). Un JSON da un **exporter locale**
+  ([stardb-exporter](https://github.com/juliuskreutz/stardb-exporter), paimon.moe, in-game/UIGF) che non
+  carica nulla è **privato** — è l'unico modo di usare lo strumento senza esporre niente.
+- **Rimuovere i dati da stardb:** il toggle *private* di stardb nasconde profilo/leaderboard ma **non**
+  l'API dei wish — i dati restano leggibili tramite UID. Per rimuoverli davvero, **cancella** i tuoi wish su stardb.
+- I **nomi dei personaggi** vengono scaricati dal repo pubblico [genshin-db](https://github.com/theBowja/genshin-db)
+  in ogni caso — **nessun dato personale** viene inviato lì.
+
+**Vuoi zero esposizione?** Usa **Load JSON** con un file da un exporter locale, oppure esegui
+`index.html` in locale — i tuoi dati non toccano mai stardb.
 
 ### Avvertenze
 - **Strumento fan non ufficiale**, non affiliato né approvato da HoYoverse.
