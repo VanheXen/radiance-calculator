@@ -99,28 +99,28 @@ const firstWin=winIdx[0], lastWin=winIdx[winIdx.length-1];
   check("UI-7 multi-UID switch (uid0=0, uid1=1)", a==="0"&&b==="1", "uid0="+a+" uid1="+b);
 })();
 
-// ===== UI-4/5/6: fetch paths (stub global.fetch) =====
-const wishesBody=()=>({ character: charOf("full_converges_to_0.json"),
-  beginner:[],standard:[],weapon:[],chronicled:[] });
-function stub(routes){ global.fetch=(url,opts)=>{ for(const [re,resp] of routes){ if(re.test(url)) return Promise.resolve(resp); } return Promise.reject(new Error("unrouted "+url)); }; }
+// ===== UI-4/5/6: fetch paths (stub global.fetch -> the proxy at WORKER_URL) =====
+function stub(routes){ global.fetch=(url,opts)=>{ for(const [re,resp] of routes){ if(re.test(url)) return Promise.resolve(typeof resp==="function"?resp():resp); } return Promise.reject(new Error("unrouted "+url)); }; }
 const json=o=>({ok:true,status:200,json:()=>Promise.resolve(o)});
+const errResp=(status,o)=>({ok:false,status,json:()=>Promise.resolve(o)});
+const LINK="https://hk4e-api-os.hoyoverse.com/event/gacha_info/api/getGachaLog?authkey=xyz";
 
 (async function(){
-  // UI-4 success by UID
-  stub([[/\/gi\/wishes\/\d+/, json(wishesBody())]]);
-  get("status").textContent=""; await fetchWishes("700000001");
-  check("UI-4 fetch by UID renders", String(get("counter").textContent)==="0" && !/Couldn't/.test(get("status").textContent),
+  // UI-4 success: proxy returns character rows
+  stub([[/deno\.dev/, ()=>json({ character: charOf("full_converges_to_0.json") })]]);
+  get("status").textContent=""; await fetchWishes(LINK);
+  check("UI-4 link fetch renders", String(get("counter").textContent)==="0" && !/Couldn't/.test(get("status").textContent),
         "status="+JSON.stringify(get("status").textContent)+" c="+get("counter").textContent);
 
-  // UI-5 import 400 -> invalid/expired
-  stub([[/wishes-import/, {ok:false,status:400}]]);
-  await fetchWishes("https://hoyo.example/gacha?authkey=xyz");
+  // UI-5 bad link -> proxy 400 with error message, surfaced verbatim
+  stub([[/deno\.dev/, errResp(400,{error:"invalid/expired wish link"})]]);
+  await fetchWishes(LINK);
   check("UI-5 bad link -> invalid/expired", /invalid\/expired/i.test(get("status").textContent), "status="+JSON.stringify(get("status").textContent));
 
-  // UI-6 empty (never imported) UID
-  stub([[/\/gi\/wishes\/\d+/, json({character:[],beginner:[],standard:[],weapon:[],chronicled:[]})]]);
-  await fetchWishes("700000002");
-  check("UI-6 empty UID -> guidance to use link", /nothing imported/i.test(get("status").textContent), "status="+JSON.stringify(get("status").textContent));
+  // UI-6 link with no character-banner pulls -> radiance-only guidance
+  stub([[/deno\.dev/, json({character:[]})]]);
+  await fetchWishes(LINK);
+  check("UI-6 no char pulls -> radiance-only message", /character-banner/i.test(get("status").textContent), "status="+JSON.stringify(get("status").textContent));
 
   console.log(`\n${pass} passed, ${fail} failed`);
   process.exit(fail?1:0);

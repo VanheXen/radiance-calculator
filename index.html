@@ -213,10 +213,10 @@
   <!-- INPUT -->
   <section class="card">
     <div class="field">
-      <input id="link" type="text" placeholder="Paste wish link or 9-digit UID" autocomplete="off" spellcheck="false" aria-label="Wish history link or 9-digit UID">
+      <input id="link" type="text" placeholder="Paste your wish-history link" autocomplete="off" spellcheck="false" aria-label="Wish history link">
       <button id="fetch">Fetch</button>
     </div>
-    <p class="field-warn"><span class="l-en">A link or UID imports your wishes to stardb, making them <strong>public to anyone who knows your UID</strong>. To stay private, use Load&nbsp;JSON. <a href="#privacy">Details</a></span><span class="l-it">Un link o UID importa i tuoi desideri su stardb, rendendoli <strong>pubblici per chiunque conosca il tuo UID</strong>. Per restare privato, usa Load&nbsp;JSON. <a href="#privacy">Dettagli</a></span></p>
+    <p class="field-warn"><span class="l-en">Fetch sends your link through a small proxy to read your wishes from HoYo — <strong>nothing is stored or made public</strong>. For fully offline use, Load&nbsp;JSON. <a href="#privacy">Details</a></span><span class="l-it">Fetch invia il tuo link tramite un piccolo proxy per leggere i desideri da HoYo — <strong>niente viene salvato o reso pubblico</strong>. Per uso totalmente offline, usa Load&nbsp;JSON. <a href="#privacy">Dettagli</a></span></p>
 
     <div class="alt">
       <label class="file">Load JSON<input id="file" type="file" accept=".json" hidden></label>
@@ -234,15 +234,10 @@
           <li>Start Genshin on your PC and open <em>Wishes → History</em>.</li>
           <li>Open <em>PowerShell</em> (search "PowerShell" in the Start menu).</li>
           <li>Run this, then copy its output (your wish link):
-            <span class="cmd-row"><code class="cmd">iwr -useb stardb.gg/wish | iex</code><button type="button" class="copy" id="copycmd" aria-label="Copy command">Copy</button></span></li>
+            <span class="cmd-row"><code class="cmd">iex "&amp;{$(irm https://gist.githubusercontent.com/MadeBaruna/1d75c1d37d19eca71591ec8a31178235/raw/getlink_global.ps1)} global"</code><button type="button" class="copy" id="copycmd" aria-label="Copy command">Copy</button></span></li>
           <li>Paste that link above and press <em>Fetch</em>.</li>
         </ol>
-        <p><strong>UID</strong> — after importing once:</p>
-        <ol>
-          <li>Do the link import above at least once (here or on stardb.gg/wish).</li>
-          <li>Then just type your <em>9-digit UID</em> (bottom-right in-game) and press <em>Fetch</em>.</li>
-        </ol>
-        <p class="tiny"><strong>On mobile or console?</strong> The link step needs a PC — import once on a PC, then use your <em>UID</em> here (or Load JSON). On PC but not Windows? Use the <a href="https://github.com/juliuskreutz/stardb-exporter" target="_blank" rel="noopener">stardb exporter</a> or <a href="https://stardb.gg/en/genshin/wish-import" target="_blank" rel="noopener">stardb.gg/wish</a>.</p>
+        <p class="tiny">The script reads your local game cache and prints the link — it uploads nothing. <strong>On mobile or console?</strong> The link step needs a PC; otherwise export a JSON with a local tool and use <em>Load JSON</em>.</p>
       </div>
       <div class="help-body l-it">
         <p><strong>Link della cronologia dei desideri</strong> (Windows) — scarica dati aggiornati:</p>
@@ -250,15 +245,10 @@
           <li>Avvia Genshin sul PC e apri <em>Desideri → Cronologia</em>.</li>
           <li>Apri <em>PowerShell</em> (cerca "PowerShell" nel menu Start).</li>
           <li>Esegui questo, poi copia l'output (il tuo link dei desideri):
-            <span class="cmd-row"><code class="cmd">iwr -useb stardb.gg/wish | iex</code></span></li>
+            <span class="cmd-row"><code class="cmd">iex "&amp;{$(irm https://gist.githubusercontent.com/MadeBaruna/1d75c1d37d19eca71591ec8a31178235/raw/getlink_global.ps1)} global"</code></span></li>
           <li>Incolla quel link sopra e premi <em>Fetch</em>.</li>
         </ol>
-        <p><strong>UID</strong> — dopo aver importato una volta:</p>
-        <ol>
-          <li>Esegui l'import via link almeno una volta (qui o su stardb.gg/wish).</li>
-          <li>Poi scrivi il tuo <em>UID a 9 cifre</em> (in basso a destra nel gioco) e premi <em>Fetch</em>.</li>
-        </ol>
-        <p class="tiny"><strong>Su mobile o console?</strong> Lo step del link richiede un PC — importa una volta da PC, poi usa il tuo <em>UID</em> qui (o Load JSON). Su PC ma non Windows? Usa lo <a href="https://github.com/juliuskreutz/stardb-exporter" target="_blank" rel="noopener">stardb exporter</a> o <a href="https://stardb.gg/en/genshin/wish-import" target="_blank" rel="noopener">stardb.gg/wish</a>.</p>
+        <p class="tiny">Lo script legge la cache locale del gioco e stampa il link — non carica nulla. <strong>Su mobile o console?</strong> Lo step del link richiede un PC; in alternativa esporta un JSON con un tool locale e usa <em>Load JSON</em>.</p>
       </div>
     </details>
     <div id="upd"></div>
@@ -314,28 +304,26 @@
         published the real mechanic. Results are estimates and can be wrong, especially on partial histories.
 
         <h4>Your data — how you load decides what's exposed</h4>
-        This app only ever contacts <strong>stardb.gg</strong> (for wishes) and <strong>genshin-db</strong>
-        (character names — no personal data).
+        This app contacts a <strong>small wish proxy</strong> (only when you press Fetch) and
+        <strong>genshin-db</strong> (character names — no personal data).
         <ul>
           <li><strong>Load JSON</strong> — nothing is sent; your wish data stays on your device.</li>
-          <li><strong>Link / UID (Fetch)</strong> — require internet and go through stardb. Pasting a link
-            imports your history to stardb, which then makes it <strong>publicly readable by anyone who
-            knows your UID</strong> (stardb's policy). UID just reads that public data. stardb's <em>private</em>
-            toggle does not hide it — only deleting your wishes on stardb does.</li>
+          <li><strong>Link (Fetch)</strong> — needs internet. Your link goes browser → proxy → HoYo;
+            the proxy reads your character-banner history and returns it. It <strong>stores nothing and
+            makes nothing public</strong>. Unlike the old stardb path, your UID is never exposed.</li>
         </ul>
 
         <h4>The extract script is safe by itself</h4>
-        Getting your link (<code>stardb.gg/wish</code> or stardb-exporter) only reads your local game cache and
-        validates the link against Hoyo's servers — it does <strong>not</strong> upload anything. Exposure
-        happens solely when you hand that link to stardb (its website or this app's Fetch).
+        Getting your link (the PowerShell command above) only reads your local game cache and
+        validates the link against Hoyo's servers — it does <strong>not</strong> upload anything.
 
         <h4>Offline &amp; fully private</h4>
-        Only <strong>Load JSON</strong> works without a connection (character data is built in). To stay private:
-        get a JSON from a local exporter, then Load JSON — your data never touches stardb. (Link and UID can't be
-        used offline.)
+        Only <strong>Load JSON</strong> works without a connection (character data is built in). To stay fully
+        private: export a JSON with a local exporter, then Load JSON — your data never leaves your device.
 
         <h4>Authkey</h4>
-        A wish link holds a read-only key that expires in ~24h and is sent only to stardb.
+        A wish link holds a read-only key that expires in ~24h, sent only to the proxy, which forwards it to
+        HoYo and keeps no copy.
       </div>
       <div class="legal-body l-it">
         <h4>Stime, non verità</h4>
@@ -343,28 +331,26 @@
         ha mai pubblicato il meccanismo reale. I risultati sono stime e possono sbagliare, soprattutto con cronologie parziali.
 
         <h4>I tuoi dati — come carichi decide cosa viene esposto</h4>
-        Quest'app contatta solo <strong>stardb.gg</strong> (per i desideri) e <strong>genshin-db</strong>
-        (nomi dei personaggi — nessun dato personale).
+        Quest'app contatta un <strong>piccolo proxy</strong> per i desideri (solo quando premi Fetch) e
+        <strong>genshin-db</strong> (nomi dei personaggi — nessun dato personale).
         <ul>
           <li><strong>Load JSON</strong> — non invia nulla; i dati restano sul tuo dispositivo.</li>
-          <li><strong>Link / UID (Fetch)</strong> — richiedono internet e passano da stardb. Inviare un link
-            importa la cronologia su stardb, che la rende <strong>leggibile pubblicamente da chiunque conosca
-            il tuo UID</strong> (policy di stardb). L'UID legge solo quei dati pubblici. Il toggle <em>private</em>
-            di stardb non lo nasconde — solo cancellare i desideri su stardb lo fa.</li>
+          <li><strong>Link (Fetch)</strong> — richiede internet. Il link va browser → proxy → HoYo; il proxy
+            legge la cronologia del banner personaggio e la restituisce. <strong>Non salva nulla e non rende
+            nulla pubblico</strong>. A differenza del vecchio percorso stardb, il tuo UID non è mai esposto.</li>
         </ul>
 
         <h4>Lo script di estrazione è sicuro di per sé</h4>
-        Ottenere il link (<code>stardb.gg/wish</code> o stardb-exporter) legge solo la cache locale del gioco e
-        valida il link contro i server di Hoyo — <strong>non</strong> carica nulla. L'esposizione avviene solo
-        quando dai quel link a stardb (il sito o il Fetch di quest'app).
+        Ottenere il link (il comando PowerShell sopra) legge solo la cache locale del gioco e
+        valida il link contro i server di Hoyo — <strong>non</strong> carica nulla.
 
         <h4>Offline e totale privacy</h4>
         Solo <strong>Load JSON</strong> funziona senza connessione (i dati personaggi sono integrati). Per restare
-        privato: ottieni un JSON da un exporter locale, poi Load JSON — i dati non toccano mai stardb. (Link e UID
-        non si usano offline.)
+        totalmente privato: esporta un JSON con un exporter locale, poi Load JSON — i dati non lasciano mai il dispositivo.
 
         <h4>Authkey</h4>
-        Un link dei desideri contiene una chiave di sola lettura che scade in ~24h ed è inviata solo a stardb.
+        Un link dei desideri contiene una chiave di sola lettura che scade in ~24h, inviata solo al proxy, che
+        la inoltra a HoYo senza tenerne copia.
       </div>
     </details>
     <p class="copyright">
@@ -385,16 +371,13 @@ const T = {
     status:["Plain coin flip. No CR boost.","Plain coin flip. No CR boost.",
             "Small (~54.5%) chance to trigger CR.","GUARANTEED Capturing Radiance win!"],
     statusInit:"Load your wish history to begin.",
-    placeholder:"Paste wish link or 9-digit UID",
-    fetching:"Fetching…", importing:"Importing from your link (stardb fetches from Hoyo)…",
-    loadingWishes:"Loading wishes…", dependsOnStart:"  (depends on start)",
+    placeholder:"Paste your wish-history link",
+    fetching:"Fetching your wishes…", dependsOnStart:"  (depends on start)",
     noFive:"No character-banner 5★ found in this data.",
     inconsistent:"History is internally inconsistent — not a valid post-v5.0 export?",
     noUid:"No UID in this export.", badFile:"Bad file: {0}", couldnt:"Couldn't fetch: {0}.",
-    invalidLink:"invalid/expired wish link", importFail:"import failed ({0})",
-    noWishes:"no wishes for UID {0} ({1})",
-    noCharBanner:"this UID has wishes but none on the character banner — radiance only applies there",
-    nothingImported:"nothing imported for UID {0} yet. Paste your wish-history LINK instead (it imports fresh from the game)",
+    importFail:"fetch failed ({0})", fetched:"wish link",
+    noCharBanner:"no character-banner pulls in this history — radiance only applies there",
     noteBad:"That pull can't have been a Capturing Radiance given the rest of your history — pick another or use the counter.",
     certainPull:"✓ Counter is now certain from your radiance pull.",
     certainConv:"✓ Counter is now certain — wins and CR resets since {0} pin it down.",
@@ -411,16 +394,13 @@ const T = {
     status:["Testa o croce. Nessun boost CR.","Testa o croce. Nessun boost CR.",
             "Piccola probabilità (~54.5%) di attivare CR.","Vincita Conquista dello splendore GARANTITA!"],
     statusInit:"Carica la cronologia dei desideri per iniziare.",
-    placeholder:"Incolla link desideri o UID a 9 cifre",
-    fetching:"Recupero…", importing:"Import dal tuo link (stardb scarica da Hoyo)…",
-    loadingWishes:"Carico i desideri…", dependsOnStart:"  (dipende dall'inizio)",
+    placeholder:"Incolla il link della cronologia desideri",
+    fetching:"Recupero dei desideri…", dependsOnStart:"  (dipende dall'inizio)",
     noFive:"Nessun 5★ del banner personaggio in questi dati.",
     inconsistent:"Cronologia internamente incoerente — export post-v5.0 non valido?",
     noUid:"Nessun UID in questo export.", badFile:"File non valido: {0}", couldnt:"Recupero fallito: {0}.",
-    invalidLink:"link desideri non valido o scaduto", importFail:"import fallito ({0})",
-    noWishes:"nessun desiderio per UID {0} ({1})",
-    noCharBanner:"questo UID ha desideri ma nessuno sul banner personaggio — lo splendore vale solo lì",
-    nothingImported:"niente importato per UID {0}. Incolla invece il LINK della cronologia (importa dal gioco)",
+    importFail:"recupero fallito ({0})", fetched:"link desideri",
+    noCharBanner:"nessun pull sul banner personaggio in questa cronologia — lo splendore vale solo lì",
     noteBad:"Quel pull non può essere stata una Conquista dello splendore vista il resto della cronologia — scegline un altro o usa il contatore.",
     certainPull:"✓ Contatore ora certo dal tuo pull dello splendore.",
     certainConv:"✓ Contatore ora certo — vittorie e reset CR dal {0} lo fissano.",
@@ -446,7 +426,7 @@ function fivestar5050(wishes){
   const out=[]; let guaranteed=false, since=0;
   for(const p of wishes){
     since++;                                  // every banner pull (any rarity) counts toward 5★ pity
-    // stardb API rows carry name+rarity inline; export rows need the charmap by item_id
+    // proxy/getGachaLog rows carry name+rarity inline; export rows need the charmap by item_id
     const c = (p.rarity!=null && p.name) ? p : CHARMAP[p.item_id];
     if(!(p.type==="character" && c && c.rarity===5)) continue;
     const ts=p.timestamp.slice(0,10), name=c.name, pity=since; since=0;
@@ -643,35 +623,24 @@ document.getElementById("uidpick").addEventListener("change", e=>{ if(LOADED) sh
 document.getElementById("seed").addEventListener("change", ()=>{ if(LAST) render(LAST.wishes, LAST.fname); });
 document.getElementById("crpick").addEventListener("change", ()=>{ if(LAST) render(LAST.wishes, LAST.fname); });
 
-// ---- fetch from stardb API (CORS-enabled): link -> import -> wishes, or UID -> wishes ----
-const API = "https://stardb.gg/api";
+// ---- fetch via our own proxy (replaces stardb): link -> getGachaLog -> character rows ----
+// Deploy worker.js (Deno Deploy) and put its URL here. The proxy paginates HoYo's
+// gacha API server-side (no browser CORS) and stores nothing.
+const WORKER_URL = "https://YOUR-PROJECT.deno.dev";   // <-- set after deploying worker.js
 async function fetchWishes(input){
   const v = input.trim();
   if(!v) return;
   const btn = document.getElementById("fetch"), status = document.getElementById("status");
   btn.disabled = true; status.textContent = t("fetching");
   try {
-    let uid;
-    if(/^\d{6,}$/.test(v)){
-      uid = v;                                   // plain UID
-    } else {
-      status.textContent = t("importing");
-      const res = await fetch(`${API}/gi/wishes-import`, {
-        method:"POST", headers:{"content-type":"application/json"},
-        body: JSON.stringify({ url: v }) });
-      if(!res.ok) throw new Error(res.status===400 ? t("invalidLink") : t("importFail", res.status));
-      uid = (await res.json()).uid;
-    }
-    status.textContent = t("loadingWishes");
-    const wres = await fetch(`${API}/gi/wishes/${uid}?lang=en`);
-    if(!wres.ok) throw new Error(t("noWishes", uid, wres.status));
-    const w = await wres.json();
-    if(!w.character || !w.character.length){
-      const total = ["beginner","standard","weapon","chronicled"].reduce((n,k)=>n+(w[k]?.length||0),0);
-      throw new Error(total ? t("noCharBanner") : t("nothingImported", uid));
-    }
-    document.getElementById("uidpick").hidden = true;   // fetch is always a single UID
-    render(w.character, t("uid", uid));
+    const res = await fetch(WORKER_URL, {
+      method:"POST", headers:{"content-type":"application/json"},
+      body: JSON.stringify({ url: v }) });
+    const w = await res.json().catch(()=>({}));
+    if(!res.ok) throw new Error(w.error || t("importFail", res.status));
+    if(!w.character || !w.character.length) throw new Error(t("noCharBanner"));
+    document.getElementById("uidpick").hidden = true;   // a link is always a single account
+    render(w.character, t("fetched"));
   } catch(e){
     status.textContent = t("couldnt", e.message);
   } finally { btn.disabled = false; }
@@ -732,7 +701,7 @@ document.getElementById("demo").addEventListener("click", ()=>{
 
 // ---- copy the PowerShell command ----
 document.getElementById("copycmd").addEventListener("click", e=>{
-  const cmd="iwr -useb stardb.gg/wish | iex";
+  const cmd="iex \"&{$(irm https://gist.githubusercontent.com/MadeBaruna/1d75c1d37d19eca71591ec8a31178235/raw/getlink_global.ps1)} global\"";
   (navigator.clipboard ? navigator.clipboard.writeText(cmd) : Promise.reject())
     .then(()=>{ e.target.textContent=t("copied"); setTimeout(()=>e.target.textContent=t("copy"),1500); })
     .catch(()=>{ e.target.textContent=t("copyManual"); setTimeout(()=>e.target.textContent=t("copy"),1800); });

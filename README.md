@@ -1,11 +1,11 @@
 # Capturing Radiance
 
-**Know your Genshin Impact 50/50 status.** A single-file web app that reads your wish history,
+**Know your Genshin Impact 50/50 status.** A web app that reads your wish history,
 reconstructs the post-v5.0 **Capturing Radiance** counter (0–3), and tells you what your next
 character-banner 50/50 does — plain flip, boosted, or guaranteed.
 
-▶ **Live:** <https://vanhexen.github.io/radiance/> — the whole app is one file, [`index.html`](index.html).
-English / Italiano.
+▶ **Live:** <https://vanhexen.github.io/radiance/> — the front-end is one file, [`index.html`](index.html);
+fetching fresh wishes uses a tiny self-hosted proxy ([`worker.js`](worker.js)). English / Italiano.
 
 ---
 
@@ -18,24 +18,20 @@ English / Italiano.
 - Works with **full or partial** history, and pins the counter for certain whenever the data allows.
 
 ### How to use
-Open the app, then load your history one of three ways.
+Open the app, then load your history one of two ways.
 
 **A · Wish-history link** (Windows, fetches fresh data)
 1. Start Genshin on your PC and open **Wishes → History**.
 2. Open **PowerShell** (search "PowerShell" in the Start menu).
 3. Run this, then copy its output (your wish link):
    ```powershell
-   iwr -useb stardb.gg/wish | iex
+   iex "&{$(irm https://gist.githubusercontent.com/MadeBaruna/1d75c1d37d19eca71591ec8a31178235/raw/getlink_global.ps1)} global"
    ```
-4. Paste the link into the app and press **Fetch**. stardb imports your history; the app reads it back.
-   - Not on Windows? Use the [stardb-exporter](https://github.com/juliuskreutz/stardb-exporter) or
-     [stardb.gg/wish](https://stardb.gg/en/genshin/wish-import).
+   The script (the one paimon.moe uses) reads your local game cache and prints the link — it uploads nothing.
+4. Paste the link into the app and press **Fetch**. A small proxy ([`worker.js`](worker.js)) reads your
+   character-banner history from HoYo and returns it; nothing is stored or made public.
 
-**B · UID** (after you've imported at least once)
-- Type your **9-digit UID** (bottom-right in-game) and press **Fetch**. Reads whatever stardb last imported —
-  re-run the link import for newer pulls.
-
-**C · Load JSON** (fully offline, private)
+**B · Load JSON** (fully offline, private)
 - Export your history as JSON from a local exporter, then **Load JSON**. Your wish data never leaves your
   device. If the file holds several accounts, a **UID picker** appears.
 
@@ -62,24 +58,24 @@ dello splendore**.
 - **Estimate, not truth.** This uses an *unofficial community model* — HoYoverse never published the real
   mechanic. Results are estimates and can be wrong, especially on partial histories.
 - **Load JSON** sends nothing; your wish data stays local.
-- **Link / UID** need internet and go through **stardb.gg**. Submitting a link **imports your history to
-  stardb, making it publicly readable by anyone who knows your UID** (stardb's policy). stardb's *private*
-  toggle does **not** hide the wish API — only deleting your wishes on stardb does.
-- The extract script (`stardb.gg/wish` / stardb-exporter) is safe by itself: it reads your local game cache
-  and validates the link against Hoyo's servers — it **does not upload anything**. Exposure happens only when
-  you hand the link to stardb.
+- **Link (Fetch)** needs internet. Your link goes browser → proxy → HoYo; the proxy reads your
+  character-banner history and returns it. It **stores nothing and exposes nothing publicly** — your UID is
+  never published (unlike the old stardb path).
+- The extract script reads your local game cache and validates the link against Hoyo's servers — it **does
+  not upload anything**.
 - **Character names** are fetched from the public [genshin-db](https://github.com/theBowja/genshin-db) repo
   regardless of method — **no personal data** is sent there.
 - **Fully private?** Use **Load JSON** with a file from a local exporter, or run `index.html` offline.
 
 ### Credits
 - [genshin-db](https://github.com/theBowja/genshin-db) by theBowja — character names, rarities, IDs.
-- [stardb.gg](https://stardb.gg) — wish import and the public API used by link/UID fetch.
+- [MadeBaruna's getlink script](https://gist.github.com/MadeBaruna/1d75c1d37d19eca71591ec8a31178235) — local wish-link extractor (also used by paimon.moe).
+- Wish fetching — [`worker.js`](worker.js), a tiny self-hosted proxy (Deno Deploy) that paginates HoYo's gacha API.
 - Capturing Radiance model — [u/OneBST's ~4M-pull analysis](https://www.reddit.com/r/Genshin_Impact/comments/1hd1sqa/), refined by u/benjaminhsieh.
 - **Genshin Impact** © HoYoverse. Unofficial fan tool, not affiliated with or endorsed by HoYoverse.
 
 ### Development
-`index.html` is the only file you ship — everything else is dev tooling.
+`index.html` is the front-end you ship; `worker.js` is the wish-fetch proxy you deploy **once**.
 ```
 python run_tests.py     # regenerate fixtures + run all tests
 python gen_testdata.py  # just regenerate testdata/ fixtures
@@ -88,6 +84,10 @@ node test_ui.js         # interactive UI paths (DOM-stubbed)
 ```
 The tests extract the **real** functions from `index.html`, so keep the JS logic, DOM hooks
 (element IDs/classes), and the English strings they assert intact when editing.
+
+**Deploy the proxy:** push `worker.js` to [Deno Deploy](https://deno.com/deploy) (free; no per-request
+subrequest cap), then set `WORKER_URL` near the bottom of `index.html` to the `*.deno.dev` URL it gives you.
+The proxy paginates HoYo's `getGachaLog` server-side (browsers can't — no CORS) and stores nothing.
 
 ---
 
@@ -100,24 +100,20 @@ The tests extract the **real** functions from `index.html`, so keep the JS logic
 - Funziona con storia **completa o parziale**, e fissa il contatore con certezza quando i dati lo permettono.
 
 ### Come si usa
-Apri l'app, poi carica la cronologia in uno dei tre modi.
+Apri l'app, poi carica la cronologia in uno dei due modi.
 
 **A · Link della cronologia dei desideri** (Windows, scarica dati aggiornati)
 1. Avvia Genshin sul PC e apri **Desideri → Cronologia**.
 2. Apri **PowerShell** (cerca "PowerShell" nel menu Start).
 3. Esegui questo, poi copia l'output (il tuo link dei desideri):
    ```powershell
-   iwr -useb stardb.gg/wish | iex
+   iex "&{$(irm https://gist.githubusercontent.com/MadeBaruna/1d75c1d37d19eca71591ec8a31178235/raw/getlink_global.ps1)} global"
    ```
-4. Incolla il link nell'app e premi **Fetch**. stardb importa la cronologia e l'app la rilegge.
-   - Non sei su Windows? Usa [stardb-exporter](https://github.com/juliuskreutz/stardb-exporter) o
-     [stardb.gg/wish](https://stardb.gg/en/genshin/wish-import).
+   Lo script (quello usato da paimon.moe) legge la cache locale del gioco e stampa il link — non carica nulla.
+4. Incolla il link nell'app e premi **Fetch**. Un piccolo proxy ([`worker.js`](worker.js)) legge la cronologia
+   del banner personaggio da HoYo e la restituisce; niente viene salvato o reso pubblico.
 
-**B · UID** (dopo aver importato almeno una volta)
-- Scrivi il tuo **UID a 9 cifre** (in basso a destra nel gioco) e premi **Fetch**. Legge l'ultimo import su
-  stardb — riesegui l'import via link per pull più recenti.
-
-**C · Load JSON** (completamente offline, privato)
+**B · Load JSON** (completamente offline, privato)
 - Esporta la cronologia come JSON da un exporter locale, poi **Load JSON**. I dati restano sul tuo
   dispositivo. Se il file contiene più account, compare un **selettore UID**.
 
@@ -144,24 +140,24 @@ I termini ufficiali EN/IT vengono dall'annuncio di HoYoverse (articolo 125274): 
 - **Stime, non verità.** Usa un *modello non ufficiale della community* — HoYoverse non ha mai pubblicato il
   meccanismo reale. I risultati sono stime e possono sbagliare, soprattutto con cronologie parziali.
 - **Load JSON** non invia nulla; i dati restano in locale.
-- **Link / UID** richiedono internet e passano da **stardb.gg**. Inviare un link **importa la cronologia su
-  stardb, rendendola leggibile pubblicamente da chiunque conosca il tuo UID** (policy di stardb). Il toggle
-  *private* di stardb **non** nasconde l'API dei desideri — solo cancellare i desideri su stardb lo fa.
-- Lo script di estrazione (`stardb.gg/wish` / stardb-exporter) è sicuro di per sé: legge la cache locale del
-  gioco e valida il link contro i server di Hoyo — **non carica nulla**. L'esposizione avviene solo quando dai
-  il link a stardb.
+- **Link (Fetch)** richiede internet. Il link va browser → proxy → HoYo; il proxy legge la cronologia del
+  banner personaggio e la restituisce. **Non salva nulla e non espone nulla pubblicamente** — il tuo UID non è
+  mai pubblicato (a differenza del vecchio percorso stardb).
+- Lo script di estrazione legge la cache locale del gioco e valida il link contro i server di Hoyo — **non
+  carica nulla**.
 - I **nomi dei personaggi** vengono scaricati dal repo pubblico [genshin-db](https://github.com/theBowja/genshin-db)
   in ogni caso — **nessun dato personale** viene inviato lì.
 - **Totale privacy?** Usa **Load JSON** con un file da un exporter locale, o esegui `index.html` offline.
 
 ### Crediti
 - [genshin-db](https://github.com/theBowja/genshin-db) di theBowja — nomi, rarità, ID dei personaggi.
-- [stardb.gg](https://stardb.gg) — import dei desideri e l'API pubblica usata dal fetch via link/UID.
+- [Script getlink di MadeBaruna](https://gist.github.com/MadeBaruna/1d75c1d37d19eca71591ec8a31178235) — estrattore locale del link (usato anche da paimon.moe).
+- Recupero dei desideri — [`worker.js`](worker.js), un piccolo proxy self-hosted (Deno Deploy) che pagina l'API gacha di HoYo.
 - Modello Conquista dello splendore — [analisi su ~4M pull di u/OneBST](https://www.reddit.com/r/Genshin_Impact/comments/1hd1sqa/), affinata da u/benjaminhsieh.
 - **Genshin Impact** © HoYoverse. Strumento fan non ufficiale, non affiliato né approvato da HoYoverse.
 
 ### Sviluppo
-`index.html` è l'unico file da distribuire — tutto il resto è strumentazione di sviluppo.
+`index.html` è il front-end da distribuire; `worker.js` è il proxy di recupero desideri da deployare **una volta**.
 ```
 python run_tests.py     # rigenera le fixture + esegue tutti i test
 python gen_testdata.py  # rigenera solo le fixture in testdata/
@@ -170,3 +166,7 @@ node test_ui.js         # percorsi UI interattivi (DOM simulato)
 ```
 I test estraggono le funzioni **reali** da `index.html`: mantieni intatti la logica JS, gli hook DOM
 (ID/classi degli elementi) e le stringhe inglesi verificate quando modifichi.
+
+**Deploy del proxy:** carica `worker.js` su [Deno Deploy](https://deno.com/deploy) (gratis; nessun limite di
+subrequest per richiesta), poi imposta `WORKER_URL` in fondo a `index.html` con l'URL `*.deno.dev` ottenuto.
+Il proxy pagina `getGachaLog` di HoYo lato server (i browser non possono — no CORS) e non salva nulla.
