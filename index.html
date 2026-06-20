@@ -310,7 +310,7 @@
           <li><strong>Load JSON</strong> — nothing is sent; your wish data stays on your device.</li>
           <li><strong>Link (Fetch)</strong> — needs internet. Your link goes browser → proxy → HoYo;
             the proxy reads your character-banner history and returns it. It <strong>stores nothing and
-            makes nothing public</strong>. Unlike the old stardb path, your UID is never exposed.</li>
+            makes nothing public</strong> — your UID stays private.</li>
         </ul>
 
         <h4>The extract script is safe by itself</h4>
@@ -337,7 +337,7 @@
           <li><strong>Load JSON</strong> — non invia nulla; i dati restano sul tuo dispositivo.</li>
           <li><strong>Link (Fetch)</strong> — richiede internet. Il link va browser → proxy → HoYo; il proxy
             legge la cronologia del banner personaggio e la restituisce. <strong>Non salva nulla e non rende
-            nulla pubblico</strong>. A differenza del vecchio percorso stardb, il tuo UID non è mai esposto.</li>
+            nulla pubblico</strong> — il tuo UID resta privato.</li>
         </ul>
 
         <h4>Lo script di estrazione è sicuro di per sé</h4>
@@ -631,7 +631,7 @@ document.getElementById("uidpick").addEventListener("change", e=>{ if(LOADED) sh
 document.getElementById("seed").addEventListener("change", ()=>{ if(LAST) render(LAST.wishes, LAST.fname); });
 document.getElementById("crpick").addEventListener("change", ()=>{ if(LAST) render(LAST.wishes, LAST.fname); });
 
-// ---- fetch via our own proxy (replaces stardb): link -> getGachaLog -> character rows ----
+// ---- fetch via our own proxy: link -> getGachaLog -> character rows ----
 // Deploy worker.js (Deno Deploy) and put its URL here. The proxy paginates HoYo's
 // gacha API server-side (no browser CORS) and stores nothing.
 const WORKER_URL = "https://radiance.vanhexen.deno.net";   // worker.js on Deno Deploy

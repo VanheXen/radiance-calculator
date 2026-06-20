@@ -1,5 +1,5 @@
 // Capturing Radiance — wish-history proxy.
-// Replaces stardb: browser POSTs the in-game wish URL, this proxy paginates
+// Browser POSTs the in-game wish URL; this proxy paginates
 // HoYo's getGachaLog server-side (no CORS in the browser) and returns normalized
 // character-banner rows. Stores nothing, logs nothing, exposes nothing public.
 //

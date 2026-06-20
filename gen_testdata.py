@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Generate labeled wish-history fixtures for the radiance calculator.
 
-Outputs testdata/<scenario>.json (stardb-export shape, load via "Load JSON")
+Outputs testdata/<scenario>.json (Load-JSON shape: rows with name/rarity/item_id)
 plus testdata/EXPECTED.md with the counter/certainty each file should produce.
 Dev tool — not part of the portable app.
 
@@ -117,7 +117,7 @@ SCENARIOS = {
  "export_charmap_path": [          # written WITHOUT inline name/rarity -> forces CHARMAP[item_id] lookup
     ("W",(2024,7,1)),("W",(2024,9,1)),("W",(2024,11,1)) ],
 }
-STRIP = {"export_charmap_path"}   # serialize these without name/rarity (stardb-export shape)
+STRIP = {"export_charmap_path"}   # serialize these without name/rarity (item_id-only shape)
 
 os.makedirs(OUT, exist_ok=True)
 lines=["# Test fixtures — expected radiance results\n",
