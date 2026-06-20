@@ -20,7 +20,7 @@ const CORS = {
 // MadeBaruna's maintained getlink script (reads local game cache, prints the link,
 // uploads nothing) with the "global" region arg.
 const WISH_SCRIPT =
-  `iex "&{$(irm https://gist.githubusercontent.com/MadeBaruna/1d75c1d37d19eca71591ec8a31178235/raw/getlink_global.ps1)} global"\n`;
+  `iex "&{$(irm https://gist.githubusercontent.com/MadeBaruna/1d75c1d37d19eca71591ec8a31178235/raw/getlink.ps1)} global"\n`;
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const json = (body, status = 200) =>
