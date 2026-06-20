@@ -16,14 +16,10 @@ const CORS = {
   "access-control-allow-headers": "content-type",
 };
 
-// Served at GET /wish so users can run a short `irm .../wish | iex`. Runs
-// MadeBaruna's maintained getlink script (reads local game cache, prints the link,
-// uploads nothing) with the "global" region arg. Forces TLS 1.2 + bypasses the
-// execution policy first, so the gist download works on older Win10 / PowerShell 5.1.
-const WISH_SCRIPT =
-  `Set-ExecutionPolicy Bypass -Scope Process -Force\n` +
-  `[Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor 3072\n` +
-  `iex "&{$((New-Object System.Net.WebClient).DownloadString('https://gist.githubusercontent.com/MadeBaruna/1d75c1d37d19eca71591ec8a31178235/raw/getlink.ps1'))} global"\n`;
+// Served at GET /wish so users can run a short `irm .../wish | iex`. This is our
+// own extractor (wish.ps1) — no third-party gist. Reads the local game cache,
+// prints the wish link, uploads nothing.
+const WISH_SCRIPT = await Deno.readTextFile(new URL("./wish.ps1", import.meta.url));
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const json = (body, status = 200) =>

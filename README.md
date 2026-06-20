@@ -27,7 +27,7 @@ Open the app, then load your history one of two ways.
    ```powershell
    irm https://radiance.vanhexen.deno.net/wish | iex
    ```
-   This runs MadeBaruna's getlink script (the one paimon.moe uses) — reads your local game cache, prints the link, uploads nothing.
+   This runs the project's own `wish.ps1` (served from the proxy) — reads your local game cache, prints the link, uploads nothing.
 4. Paste the link into the app and press **Fetch**. A small proxy ([`worker.js`](worker.js)) reads your
    character-banner history from HoYo and returns it; nothing is stored or made public.
 
@@ -69,7 +69,7 @@ dello splendore**.
 
 ### Credits
 - [genshin-db](https://github.com/theBowja/genshin-db) by theBowja — character names, rarities, IDs.
-- [MadeBaruna's getlink script](https://gist.github.com/MadeBaruna/1d75c1d37d19eca71591ec8a31178235) — local wish-link extractor (also used by paimon.moe).
+- Wish-link extraction — own script ([`wish.ps1`](wish.ps1)), served from the proxy at `/wish`; reads the local game cache, uploads nothing. (Cache-parsing technique pioneered by the community — MadeBaruna / jogerj.)
 - Wish fetching — [`worker.js`](worker.js), a tiny self-hosted proxy (Deno Deploy) that paginates HoYo's gacha API.
 - Capturing Radiance model — [u/OneBST's ~4M-pull analysis](https://www.reddit.com/r/Genshin_Impact/comments/1hd1sqa/), refined by u/benjaminhsieh.
 - **Genshin Impact** © HoYoverse. Unofficial fan tool, not affiliated with or endorsed by HoYoverse.
@@ -109,7 +109,7 @@ Apri l'app, poi carica la cronologia in uno dei due modi.
    ```powershell
    irm https://radiance.vanhexen.deno.net/wish | iex
    ```
-   Esegue lo script getlink di MadeBaruna (quello usato da paimon.moe) — legge la cache locale del gioco, stampa il link, non carica nulla.
+   Esegue il `wish.ps1` del progetto (servito dal proxy) — legge la cache locale del gioco, stampa il link, non carica nulla.
 4. Incolla il link nell'app e premi **Fetch**. Un piccolo proxy ([`worker.js`](worker.js)) legge la cronologia
    del banner personaggio da HoYo e la restituisce; niente viene salvato o reso pubblico.
 
@@ -151,7 +151,7 @@ I termini ufficiali EN/IT vengono dall'annuncio di HoYoverse (articolo 125274): 
 
 ### Crediti
 - [genshin-db](https://github.com/theBowja/genshin-db) di theBowja — nomi, rarità, ID dei personaggi.
-- [Script getlink di MadeBaruna](https://gist.github.com/MadeBaruna/1d75c1d37d19eca71591ec8a31178235) — estrattore locale del link (usato anche da paimon.moe).
+- Estrazione del link — script proprio ([`wish.ps1`](wish.ps1)), servito dal proxy su `/wish`; legge la cache locale del gioco, non carica nulla. (Tecnica di parsing della cache nata nella community — MadeBaruna / jogerj.)
 - Recupero dei desideri — [`worker.js`](worker.js), un piccolo proxy self-hosted (Deno Deploy) che pagina l'API gacha di HoYo.
 - Modello Conquista dello splendore — [analisi su ~4M pull di u/OneBST](https://www.reddit.com/r/Genshin_Impact/comments/1hd1sqa/), affinata da u/benjaminhsieh.
 - **Genshin Impact** © HoYoverse. Strumento fan non ufficiale, non affiliato né approvato da HoYoverse.
