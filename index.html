@@ -626,7 +626,7 @@ document.getElementById("crpick").addEventListener("change", ()=>{ if(LAST) rend
 // ---- fetch via our own proxy (replaces stardb): link -> getGachaLog -> character rows ----
 // Deploy worker.js (Deno Deploy) and put its URL here. The proxy paginates HoYo's
 // gacha API server-side (no browser CORS) and stores nothing.
-const WORKER_URL = "https://YOUR-PROJECT.deno.dev";   // <-- set after deploying worker.js
+const WORKER_URL = "https://radiance.vanhexen.deno.net";   // worker.js on Deno Deploy
 async function fetchWishes(input){
   const v = input.trim();
   if(!v) return;
