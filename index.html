@@ -362,7 +362,15 @@
 
 <script>
 const V50 = "2024-08-28";
-const STANDARD = new Set(["Diluc","Jean","Keqing","Mona","Qiqi","Tighnari","Dehya"]);
+// 5★ standard pool -> date the char ENTERED it. A char-banner 5★ counts as a lost
+// 50/50 only on/after this date; before it the char was a limited feature (a win).
+// Only chars added to standard after v5.0 (Mizuki, 5.5) actually need the date — the
+// rest predate v5.0. Add one line here the rare time HoYo adds a standard 5★.
+const STANDARD = {
+  "Diluc":"2020-09-28", "Jean":"2020-09-28", "Keqing":"2020-09-28", "Mona":"2020-09-28",
+  "Qiqi":"2020-09-28", "Tighnari":"2022-08-24", "Dehya":"2023-04-12",
+  "Yumemizuki Mizuki":"2025-03-26"
+};
 const GDB = "https://raw.githubusercontent.com/theBowja/genshin-db/main/src/data/";
 // ---- i18n: English / Italian for all JS-generated strings ----
 let LANG = localStorage.getItem("lang")==="it" ? "it" : "en";
@@ -431,7 +439,7 @@ function fivestar5050(wishes){
     if(!(p.type==="character" && c && c.rarity===5)) continue;
     const ts=p.timestamp.slice(0,10), name=c.name, pity=since; since=0;
     if(guaranteed){ out.push([ts,name,"GUARANTEE",pity]); guaranteed=false; continue; } // post-loss guarantee, not a 50/50
-    if(STANDARD.has(name)){ out.push([ts,name,"LOSS",pity]); guaranteed=true; }
+    if(STANDARD[name] && ts >= STANDARD[name]){ out.push([ts,name,"LOSS",pity]); guaranteed=true; }
     else out.push([ts,name,"WIN",pity]);
   }
   return out;
@@ -669,7 +677,7 @@ applyLang(LANG);
 // ---- sample data: fresh random (but model-valid) history on every press ----
 const DEMO_FEATURED=["Furina","Nahida","Arlecchino","Clorinde","Mavuika","Neuvillette",
   "Raiden Shogun","Yelan","Kaedehara Kazuha","Hu Tao","Navia","Lyney","Mualani","Venti","Skirk"];
-const DEMO_STANDARD=[...STANDARD];   // a 5★ from the standard pool = a lost 50/50
+const DEMO_STANDARD=Object.keys(STANDARD).filter(n=>STANDARD[n]<=V50);   // standard for the whole demo window (V50+) = a lost 50/50
 function demoData(){
   const rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
   const pick=arr=>arr[rnd(0,arr.length-1)];

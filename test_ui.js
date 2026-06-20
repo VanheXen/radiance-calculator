@@ -90,6 +90,14 @@ const firstWin=winIdx[0], lastWin=winIdx[winIdx.length-1];
   check("UI-8 malicious name escaped (no XSS)", html.includes("&lt;img")&&!/<img/i.test(html), "html="+html.slice(0,140));
 })();
 
+// ===== UI-9: Mizuki is date-gated standard (limited before 5.5, standard on/after) =====
+(function(){
+  const mz=d=>[{type:"character",name:"Yumemizuki Mizuki",rarity:5,item_id:10000109,timestamp:d+"T12:00:00Z"}];
+  const before=f5(mz("2025-03-01"))[0][2];   // her limited era -> WIN
+  const after =f5(mz("2025-03-26"))[0][2];   // joined standard pool -> LOSS
+  check("UI-9 Mizuki pre-5.5=WIN, on/after=LOSS", before==="WIN"&&after==="LOSS", "before="+before+" after="+after);
+})();
+
 // ===== UI-7: multi-UID switch (export with 2 accounts) =====
 (function(){
   const uids=JSON.parse(fs.readFileSync("testdata/multi_uid.json","utf8")).user.gi.uids;
